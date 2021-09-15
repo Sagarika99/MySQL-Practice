@@ -1,0 +1,233 @@
+ADDRESS BOOK SYSTEM
+
+UC1-Ability to create a Address Book Service DB
+mysql> CREATE DATABASE address_book;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| address_book       |
+| information_schema |
+| mysql              |
+| payroll_service    |
+| performance_schema |
+| sakila             |
+| sys                |
+| world              |
++--------------------+
+
+UC2-Ability to create a Address Book Table with first and last names, address, city, state, zip, phone number and email as its attributes
+mysql> CREATE TABLE AddressBook_Data
+    -> (id INT unsigned NOT NULL AUTO_INCREMENT,
+    -> First_Name VARCHAR(150) NOT NULL,
+    -> Last_Name VARCHAR(150) NOT NULL,
+    -> Address VARCHAR(150) NOT NULL,
+    -> City VARCHAR(100) NOT NULL,
+    -> State VARCHAR(100) NOT NULL,
+    -> Zip INT(6) NOT NULL,
+    -> Phone_Num VARCHAR(10) NOT NULL,
+    -> Email VARCHAR(150) NOT NULL,
+    -> PRIMARY KEY (id)
+    -> );
+
+mysql> DESCRIBE AddressBook_Data;
++------------+--------------+------+-----+---------+----------------+
+| Field      | Type         | Null | Key | Default | Extra          |
++------------+--------------+------+-----+---------+----------------+
+| id         | int unsigned | NO   | PRI | NULL    | auto_increment |
+| First_Name | varchar(150) | NO   |     | NULL    |                |
+| Last_Name  | varchar(150) | NO   |     | NULL    |                |
+| Address    | varchar(150) | NO   |     | NULL    |                |
+| City       | varchar(100) | NO   |     | NULL    |                |
+| State      | varchar(100) | NO   |     | NULL    |                |
+| Zip        | int          | NO   |     | NULL    |                |
+| Phone_Num  | varchar(10)  | NO   |     | NULL    |                |
+| Email      | varchar(150) | NO   |     | NULL    |                |
++------------+--------------+------+-----+---------+----------------+
+
+UC3-Ability to insert new Contacts to Address Book
+mysql> INSERT INTO AddressBook_Data (First_Name, Last_Name, Address, City, State, Zip, Phone_Num, Email) VALUES
+    -> ('Sagarika', 'Shinde', 'Wilson House', 'Mumbai', 'Maharashtra', 400067, 7867564686, 'abc@yahoo.com'),
+    -> ('Neha', 'Ghadi', 'Sangam House', 'Mumbai', 'Maharashtra', 400567, 9898786787, 'xyz@yahoo.com'),
+    -> ('Saniya', 'Bhonde', 'Navy Nagar', 'Surat', 'Gujrat', 400007, 9976865796, 'saniya@yahoo.com'),
+    -> ('Meghana', 'Gupta', 'Jackson House', 'Pune', 'Maharashtra', 400012, 9565477897, 'megha12@gmail.com'),
+    -> ('Rugved', 'Shinde', 'Churchgate', 'Mumbai', 'Maharashtra', 401212, 9675576879, 'rugved78@gmail.com');
+
+mysql> SELECT * FROM AddressBook_Data;
++----+------------+-----------+---------------+--------+-------------+--------+------------+--------------------+
+| id | First_Name | Last_Name | Address       | City   | State       | Zip    | Phone_Num  | Email              |
++----+------------+-----------+---------------+--------+-------------+--------+------------+--------------------+
+|  1 | Sagarika   | Shinde    | Wilson House  | Mumbai | Maharashtra | 400067 | 7867564686 | abc@yahoo.com      |
+|  2 | Neha       | Ghadi     | Sangam House  | Mumbai | Maharashtra | 400567 | 9898786787 | xyz@yahoo.com      |
+|  3 | Saniya     | Bhonde    | Navy Nagar    | Surat  | Gujrat      | 400007 | 9976865796 | saniya@yahoo.com   |
+|  4 | Meghana    | Gupta     | Jackson House | Pune   | Maharashtra | 400012 | 9565477897 | megha12@gmail.com  |
+|  5 | Rugved     | Shinde    | Churchgate    | Mumbai | Maharashtra | 401212 | 9675576879 | rugved78@gmail.com |
++----+------------+-----------+---------------+--------+-------------+--------+------------+--------------------+
+
+UC4-Ability to edit existing contact person using their name
+mysql> UPDATE AddressBook_Data SET Address = 'Mhada Colony',
+    -> City = 'Kandivali'
+    -> WHERE First_Name = 'Neha';
+
+mysql> SELECT * FROM AddressBook_Data;
++----+------------+-----------+---------------+-----------+-------------+--------+------------+--------------------+
+| id | First_Name | Last_Name | Address       | City      | State       | Zip    | Phone_Num  | Email              |
++----+------------+-----------+---------------+-----------+-------------+--------+------------+--------------------+
+|  1 | Sagarika   | Shinde    | Wilson House  | Mumbai    | Maharashtra | 400067 | 7867564686 | abc@yahoo.com      |
+|  2 | Neha       | Ghadi     | Mhada Colony  | Kandivali | Maharashtra | 400567 | 9898786787 | xyz@yahoo.com      |
+|  3 | Saniya     | Bhonde    | Navy Nagar    | Surat     | Gujrat      | 400007 | 9976865796 | saniya@yahoo.com   |
+|  4 | Meghana    | Gupta     | Jackson House | Pune      | Maharashtra | 400012 | 9565477897 | megha12@gmail.com  |
+|  5 | Rugved     | Shinde    | Churchgate    | Mumbai    | Maharashtra | 401212 | 9675576879 | rugved78@gmail.com |
++----+------------+-----------+---------------+-----------+-------------+--------+------------+--------------------+
+
+UC5-Ability to delete a person using person's name
+mysql> DELETE FROM AddressBook_Data WHERE First_Name = 'Rugved';
+
+mysql> SELECT * FROM AddressBook_Data;
++----+------------+-----------+---------------+-----------+-------------+--------+------------+-------------------+
+| id | First_Name | Last_Name | Address       | City      | State       | Zip    | Phone_Num  | Email             |
++----+------------+-----------+---------------+-----------+-------------+--------+------------+-------------------+
+|  1 | Sagarika   | Shinde    | Wilson House  | Mumbai    | Maharashtra | 400067 | 7867564686 | abc@yahoo.com     |
+|  2 | Neha       | Ghadi     | Mhada Colony  | Kandivali | Maharashtra | 400567 | 9898786787 | xyz@yahoo.com     |
+|  3 | Saniya     | Bhonde    | Navy Nagar    | Surat     | Gujrat      | 400007 | 9976865796 | saniya@yahoo.com  |
+|  4 | Meghana    | Gupta     | Jackson House | Pune      | Maharashtra | 400012 | 9565477897 | megha12@gmail.com |
++----+------------+-----------+---------------+-----------+-------------+--------+------------+-------------------+
+
+UC6-Ability to Retrieve Person belonging to a City or State from the Address Book
+mysql> SELECT * FROM AddressBook_Data WHERE City = 'Mumbai';
++----+------------+-----------+--------------+--------+-------------+--------+------------+---------------+
+| id | First_Name | Last_Name | Address      | City   | State       | Zip    | Phone_Num  | Email         |
++----+------------+-----------+--------------+--------+-------------+--------+------------+---------------+
+|  1 | Sagarika   | Shinde    | Wilson House | Mumbai | Maharashtra | 400067 | 7867564686 | abc@yahoo.com |
++----+------------+-----------+--------------+--------+-------------+--------+------------+---------------+
+
+mysql> SELECT * FROM AddressBook_Data WHERE State = 'Maharashtra';
++----+------------+-----------+---------------+-----------+-------------+--------+------------+-------------------+
+| id | First_Name | Last_Name | Address       | City      | State       | Zip    | Phone_Num  | Email             |
++----+------------+-----------+---------------+-----------+-------------+--------+------------+-------------------+
+|  1 | Sagarika   | Shinde    | Wilson House  | Mumbai    | Maharashtra | 400067 | 7867564686 | abc@yahoo.com     |
+|  2 | Neha       | Ghadi     | Mhada Colony  | Kandivali | Maharashtra | 400567 | 9898786787 | xyz@yahoo.com     |
+|  4 | Meghana    | Gupta     | Jackson House | Pune      | Maharashtra | 400012 | 9565477897 | megha12@gmail.com |
++----+------------+-----------+---------------+-----------+-------------+--------+------------+-------------------+
+
+mysql> SELECT * FROM AddressBook_Data WHERE City = 'Mumbai' OR State='Maharashtra';
++----+------------+-----------+---------------+-----------+-------------+--------+------------+-------------------+
+| id | First_Name | Last_Name | Address       | City      | State       | Zip    | Phone_Num  | Email             |
++----+------------+-----------+---------------+-----------+-------------+--------+------------+-------------------+
+|  1 | Sagarika   | Shinde    | Wilson House  | Mumbai    | Maharashtra | 400067 | 7867564686 | abc@yahoo.com     |
+|  2 | Neha       | Ghadi     | Mhada Colony  | Kandivali | Maharashtra | 400567 | 9898786787 | xyz@yahoo.com     |
+|  4 | Meghana    | Gupta     | Jackson House | Pune      | Maharashtra | 400012 | 9565477897 | megha12@gmail.com |
++----+------------+-----------+---------------+-----------+-------------+--------+------------+-------------------+
+
+UC7-Ability to understand the size of address book by City and State
+mysql> SELECT COUNT(City) FROM AddressBook_Data;
++-------------+
+| COUNT(City) |
++-------------+
+|           4 |
++-------------+
+
+mysql> SELECT city,COUNT(City) FROM AddressBook_Data GROUP BY City;
++-----------+-------------+
+| city      | COUNT(City) |
++-----------+-------------+
+| Mumbai    |           1 |
+| Kandivali |           1 |
+| Surat     |           1 |
+| Pune      |           1 |
++-----------+-------------+
+
+UC8-Ability to retrieve entries sorted alphabetically by Person’s name for a given city
+mysql> SELECT * FROM AddressBook_Data;
++----+------------+-----------+---------------+-----------+-------------+--------+------------+--------------------+
+| id | First_Name | Last_Name | Address       | City      | State       | Zip    | Phone_Num  | Email              |
++----+------------+-----------+---------------+-----------+-------------+--------+------------+--------------------+
+|  1 | Sagarika   | Shinde    | Wilson House  | Mumbai    | Maharashtra | 400067 | 7867564686 | abc@yahoo.com      |
+|  2 | Neha       | Ghadi     | Mhada Colony  | Kandivali | Maharashtra | 400567 | 9898786787 | xyz@yahoo.com      |
+|  3 | Saniya     | Bhonde    | Navy Nagar    | Surat     | Gujrat      | 400007 | 9976865796 | saniya@yahoo.com   |
+|  4 | Meghana    | Gupta     | Jackson House | Pune      | Maharashtra | 400012 | 9565477897 | megha12@gmail.com  |
+|  6 | Rugved     | Shinde    | Churchgate    | Mumbai    | Maharashtra | 401212 | 9675576879 | rugved78@gmail.com |
++----+------------+-----------+---------------+-----------+-------------+--------+------------+--------------------+
+
+mysql> SELECT First_Name,City FROM AddressBook_Data Where City = 'Mumbai' ORDER BY First_Name ASC;
++------------+--------+
+| First_Name | City   |
++------------+--------+
+| Rugved     | Mumbai |
+| Sagarika   | Mumbai |
++------------+--------+
+
+UC9-Ability to identify each Address Book with name and Type
+mysql> ALTER TABLE AddressBook_Data add Name VARCHAR(150) AFTER Last_Name;
+
+mysql> ALTER TABLE AddressBook_Data add Type VARCHAR(150) AFTER Name;
+
+mysql> DESCRIBE AddressBook_Data;
++------------+--------------+------+-----+---------+----------------+
+| Field      | Type         | Null | Key | Default | Extra          |
++------------+--------------+------+-----+---------+----------------+
+| id         | int unsigned | NO   | PRI | NULL    | auto_increment |
+| First_Name | varchar(150) | NO   |     | NULL    |                |
+| Last_Name  | varchar(150) | NO   |     | NULL    |                |
+| Name       | varchar(150) | YES  |     | NULL    |                |
+| Type       | varchar(150) | YES  |     | NULL    |                |
+| Address    | varchar(150) | NO   |     | NULL    |                |
+| City       | varchar(100) | NO   |     | NULL    |                |
+| State      | varchar(100) | NO   |     | NULL    |                |
+| Zip        | int          | NO   |     | NULL    |                |
+| Phone_Num  | varchar(10)  | NO   |     | NULL    |                |
+| Email      | varchar(150) | NO   |     | NULL    |                |
++------------+--------------+------+-----+---------+----------------+
+
+mysql> UPDATE AddressBook_Data SET Name='FamilyBook',Type='Family';
+mysql> SELECT * FROM AddressBook_Data;
++----+------------+-----------+------------+--------+---------------+-----------+-------------+--------+------------+--------------------+
+| id | First_Name | Last_Name | Name       | Type   | Address       | City      | State       | Zip    | Phone_Num  | Email              |
++----+------------+-----------+------------+--------+---------------+-----------+-------------+--------+------------+--------------------+
+|  1 | Sagarika   | Shinde    | FamilyBook | Family | Wilson House  | Mumbai    | Maharashtra | 400067 | 7867564686 | abc@yahoo.com      |
+|  2 | Neha       | Ghadi     | FamilyBook | Family | Mhada Colony  | Kandivali | Maharashtra | 400567 | 9898786787 | xyz@yahoo.com      |
+|  3 | Saniya     | Bhonde    | FamilyBook | Family | Navy Nagar    | Surat     | Gujrat      | 400007 | 9976865796 | saniya@yahoo.com   |
+|  4 | Meghana    | Gupta     | FamilyBook | Family | Jackson House | Pune      | Maharashtra | 400012 | 9565477897 | megha12@gmail.com  |
+|  6 | Rugved     | Shinde    | FamilyBook | Family | Churchgate    | Mumbai    | Maharashtra | 401212 | 9675576879 | rugved78@gmail.com |
++----+------------+-----------+------------+--------+---------------+-----------+-------------+--------+------------+--------------------+
+
+mysql> UPDATE AddressBook_Data SET Name='FriendBook',Type='Friends' WHERE First_Name='Neha' OR First_Name='Meghana' OR First_Name='Saniya';
+mysql> SELECT * FROM AddressBook_Data;
++----+------------+-----------+------------+---------+---------------+-----------+-------------+--------+------------+--------------------+
+| id | First_Name | Last_Name | Name       | Type    | Address       | City      | State       | Zip    | Phone_Num  | Email              |
++----+------------+-----------+------------+---------+---------------+-----------+-------------+--------+------------+--------------------+
+|  1 | Sagarika   | Shinde    | FamilyBook | Family  | Wilson House  | Mumbai    | Maharashtra | 400067 | 7867564686 | abc@yahoo.com      |
+|  2 | Neha       | Ghadi     | FriendBook | Friends | Mhada Colony  | Kandivali | Maharashtra | 400567 | 9898786787 | xyz@yahoo.com      |
+|  3 | Saniya     | Bhonde    | FriendBook | Friends | Navy Nagar    | Surat     | Gujrat      | 400007 | 9976865796 | saniya@yahoo.com   |
+|  4 | Meghana    | Gupta     | FriendBook | Friends | Jackson House | Pune      | Maharashtra | 400012 | 9565477897 | megha12@gmail.com  |
+|  6 | Rugved     | Shinde    | FamilyBook | Family  | Churchgate    | Mumbai    | Maharashtra | 401212 | 9675576879 | rugved78@gmail.com |
++----+------------+-----------+------------+---------+---------------+-----------+-------------+--------+------------+--------------------+
+
+UC10-Ability to get numberof contact persons i.e. count by type
+mysql> SELECT type,COUNT(type) FROM AddressBook_Data GROUP BY Type;
++---------+-------------+
+| type    | COUNT(type) |
++---------+-------------+
+| Family  |           2 |
+| Friends |           3 |
++---------+-------------+
+
+UC11-Ability to add person to both Friend and Family
+mysql> INSERT INTO AddressBook_Data (First_Name, Last_Name, Name, Type, Address, City, State, Zip, Phone_Num, Email) VALUES
+    -> ('Rutwik', 'Bhangale','FriendBook','Friends', 'Colaba', 'Mumbai', 'Maharashtra', 401200, 9675576879, 'rutwik8@gmail.com'),
+    -> ('Sheetal', 'Shinde','FamilyBook','Family', 'Wilson House', 'Mumbai', 'Maharashtra', 400067, 7677879086, 'abcxyz@yahoo.com');
+
+mysql> SELECT * FROM AddressBook_Data;
++----+------------+-----------+------------+---------+---------------+-----------+-------------+--------+------------+--------------------+
+| id | First_Name | Last_Name | Name       | Type    | Address       | City      | State       | Zip    | Phone_Num  | Email              |
++----+------------+-----------+------------+---------+---------------+-----------+-------------+--------+------------+--------------------+
+|  1 | Sagarika   | Shinde    | FamilyBook | Family  | Wilson House  | Mumbai    | Maharashtra | 400067 | 7867564686 | abc@yahoo.com      |
+|  2 | Neha       | Ghadi     | FriendBook | Friends | Mhada Colony  | Kandivali | Maharashtra | 400567 | 9898786787 | xyz@yahoo.com      |
+|  3 | Saniya     | Bhonde    | FriendBook | Friends | Navy Nagar    | Surat     | Gujrat      | 400007 | 9976865796 | saniya@yahoo.com   |
+|  4 | Meghana    | Gupta     | FriendBook | Friends | Jackson House | Pune      | Maharashtra | 400012 | 9565477897 | megha12@gmail.com  |
+|  6 | Rugved     | Shinde    | FamilyBook | Family  | Churchgate    | Mumbai    | Maharashtra | 401212 | 9675576879 | rugved78@gmail.com |
+|  7 | Rutwik     | Bhangale  | FriendBook | Friends | Colaba        | Mumbai    | Maharashtra | 401200 | 9675576879 | rutwik8@gmail.com  |
+|  8 | Sheetal    | Shinde    | FamilyBook | Family  | Wilson House  | Mumbai    | Maharashtra | 400067 | 7677879086 | abcxyz@yahoo.com   |
++----+------------+-----------+------------+---------+---------------+-----------+-------------+--------+------------+--------------------+
