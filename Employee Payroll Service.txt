@@ -144,3 +144,154 @@ mysql> SELECT gender,SUM(salary) FROM employee_payroll GROUP BY GENDER;
 | M      |     4000000 |
 | F      |     3000000 |
 +--------+-------------+
+
+UC8-Ability to extend employee_payroll data to store empl info like phonenum, address and department
+mysql> ALTER TABLE employee_payroll ADD phoneNum VARCHAR(250) AFTER Name;
+mysql> ALTER TABLE employee_payroll ADD address VARCHAR(250) AFTER phoneNum;
+mysql> ALTER TABLE employee_payroll ADD Dept VARCHAR(150) NOT NULL AFTER address;
+
+UC9-Ability to extend employee_payroll to have basic pay, deductions, taxable pay, income tax, net pay
+mysql> ALTER TABLE employee_payroll RENAME COLUMN salary TO basic_pay;
+mysql> ALTER TABLE employee_payroll ADD deductions Double NOT NULL AFTER basic_pay;
+mysql> ALTER TABLE employee_payroll ADD taxable_pay Double NOT NULL AFTER deductions;
+mysql> ALTER TABLE employee_payroll ADD tax Double NOT NULL AFTER taxable_pay;
+mysql> ALTER TABLE employee_payroll ADD net_pay Double NOT NULL AFTER tax;
+mysql> UPDATE employee_payroll SET Dept = 'Sales' WHERE name='Terisa';
+
+UC10-Ability to make Terisa as Part of Sales and Marketing Dept
+mysql> INSERT INTO employee_payroll
+    -> (name, Dept, gender, basic_pay, deductions, taxable_pay, tax, net_pay, start) VALUES
+    -> ('Terisa', 'Marketing', 'F', 3000000.00, 1000000.00, 2000000.00, 5000000.00, 1500000, '2018-01-03');
+
+mysql> SELECT * FROM employee_payroll;
++----+---------+----------+---------+-----------+--------+-----------+------------+-------------+---------+---------+------------+
+| id | name    | phoneNum | address | Dept      | gender | basic_pay | deductions | taxable_pay | tax     | net_pay | start      |
++----+---------+----------+---------+-----------+--------+-----------+------------+-------------+---------+---------+------------+
+|  1 | Bill    | NULL     | NULL    |           | M      |   1000000 |          0 |           0 |       0 |       0 | 2018-01-03 |
+|  2 | Terisa  | NULL     | NULL    | Sales     | F      |   3000000 |          0 |           0 |       0 |       0 | 2019-11-13 |
+|  3 | Charlie | NULL     | NULL    |           | M      |   3000000 |          0 |           0 |       0 |       0 | 2020-05-21 |
+|  4 | Terisa  | NULL     | TBD     | Marketing | F      |   3000000 |    1000000 |     2000000 | 5000000 | 1500000 | 2018-01-03 |
++----+---------+----------+---------+-----------+--------+-----------+------------+-------------+---------+---------+------------+
+
+UC11-Implement the ER Diagram into Payroll Service DB
+mysql> CREATE DATABASE Employee_System;
+mysql> CREATE TABLE Company;
+mysql> CREATE TABLE Company(Cmp_id INT NOT NULL, Cmp_Name VARCHAR(50) NOT NULL);
+mysql> INSERT INTO Company(Cmp_id, Cmp_Name) VALUES
+    -> (12,'MorningStar'),
+    -> (43,'Infosys'),
+    -> (24,'LTI')
+    -> PRIMARY KEY(Cmp_id);
+
+mysql> CREATE TABLE Payroll( Payment_id INT NOT NULL,
+    -> basic_pay Double NOT NULL,
+    -> deductions Double NOT NULL,
+    -> taxable_pay Double NOT NULL,
+    -> tax Double NOT NULL,
+    -> net_pay Double NOT NULL,
+    -> PRIMARY KEY (Payment_id)
+    -> );
+
+mysql> INSERT INTO Payroll VALUES
+    -> (1, 10000.0, 20000.00, 40000.00, 230000.0, 50000.00),
+    -> (2, 20000.0, 40000.00, 32000.00, 120000.0, 60000.00),
+    -> (3, 30000.0, 12000.00, 78000.00, 540000.0, 45000.00);
+
+mysql> CREATE TABLE Employee(Emp_id INT NOT NULL,
+    -> Name VARCHAR(50) NOT NULL,
+    -> Address VARCHAR(50),
+    -> Gender CHAR(1) NOT NULL,
+    -> Payment_id INT,
+    -> Cmp_id INT,
+    -> PRIMARY KEY (Emp_id),
+    -> FOREIGN KEY (Payment_id) REFERENCES Payroll(Payment_id),
+    -> FOREIGN KEY (Cmp_id) REFERENCES Company(Cmp_id)
+    -> );
+
+mysql> INSERT INTO Employee VALUES
+    -> (01, 'Sagarika Shinde', 'Wilson House', 'F', 2, 12),
+    -> (02, 'Saniya Bhonde', 'Sangam House', 'F', 3, 43),
+    -> (03, 'Rutwik Bhangale', 'Kennery', 'M', 1, 24);
+
+mysql> CREATE TABLE Dept (Dept_id INT NOT NULL,
+    -> Dept_Name VARCHAR(150) NOT NULL,
+    -> PRIMARY KEY(Dept_id)
+    -> );
+
+mysql> INSERT INTO Dept VALUES
+    -> (99, 'IT'),
+    -> (11, 'CMPN'),
+    -> (201, 'EXTC'),
+    -> (444, 'ÉTRX');
+
+mysql> CREATE TABLE Emp_Dept
+    -> (Emp_id INT NOT NULL,
+    -> Dept_id INT NOT NULL,
+    -> FOREIGN KEY(Emp_id) REFERENCES Employee(Emp_id),
+    -> FOREIGN KEY(Dept_id) REFERENCES Dept(Dept_id)
+    -> );
+
+mysql> INSERT INTO Emp_Dept VALUES
+    -> (2, 201),
+    -> (3, 11),
+    -> (1, 444),
+    -> (2, 99);
+
+mysql> SELECT * FROM Company;
++--------+-------------+
+| Cmp_id | Cmp_Name    |
++--------+-------------+
+|     12 | MorningStar |
+|     24 | LTI         |
+|     43 | Infosys     |
++--------+-------------+
+
+mysql> SELECT * FROM Dept;
++---------+-----------+
+| Dept_id | Dept_Name |
++---------+-----------+
+|      11 | CMPN      |
+|      99 | IT        |
+|     201 | EXTC      |
+|     444 | ÉTRX      |
++---------+-----------+
+
+mysql> SELECT * FROM Emp_Dept;
++--------+---------+
+| Emp_id | Dept_id |
++--------+---------+
+|      2 |     201 |
+|      3 |      11 |
+|      1 |     444 |
+|      2 |      99 |
++--------+---------+
+
+mysql> SELECT * FROM Employee;
++--------+-----------------+--------------+--------+------------+--------+
+| Emp_id | Name            | Address      | Gender | Payment_id | Cmp_id |
++--------+-----------------+--------------+--------+------------+--------+
+|      1 | Sagarika Shinde | Wilson House | F      |          2 |     12 |
+|      2 | Saniya Bhonde   | Sangam House | F      |          3 |     43 |
+|      3 | Rutwik Bhangale | Kennery      | M      |          1 |     24 |
++--------+-----------------+--------------+--------+------------+--------+
+
+mysql> SELECT * FROM Payroll;
++------------+-----------+------------+-------------+--------+---------+
+| Payment_id | basic_pay | deductions | taxable_pay | tax    | net_pay |
++------------+-----------+------------+-------------+--------+---------+
+|          1 |     10000 |      20000 |       40000 | 230000 |   50000 |
+|          2 |     20000 |      40000 |       32000 | 120000 |   60000 |
+|          3 |     30000 |      12000 |       78000 | 540000 |   45000 |
++------------+-----------+------------+-------------+--------+---------+
+
+UC12-Ensure all retrieve queries done especially in UC 4, UC 5 and UC 7 are working with new table structure
+mysql> SELECT Employee.gender,sum(Payroll.basic_pay) FROM Employee INNER JOIN Payroll ON Employee.Payment_id=Payroll.Payment_id GROUP BY GENDER;
++--------+------------------------+
+| gender | sum(Payroll.basic_pay) |
++--------+------------------------+
+| F      |                  50000 |
+| M      |                  10000 |
++--------+------------------------+
+
+
+

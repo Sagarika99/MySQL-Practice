@@ -231,3 +231,82 @@ mysql> SELECT * FROM AddressBook_Data;
 |  7 | Rutwik     | Bhangale  | FriendBook | Friends | Colaba        | Mumbai    | Maharashtra | 401200 | 9675576879 | rutwik8@gmail.com  |
 |  8 | Sheetal    | Shinde    | FamilyBook | Family  | Wilson House  | Mumbai    | Maharashtra | 400067 | 7677879086 | abcxyz@yahoo.com   |
 +----+------------+-----------+------------+---------+---------------+-----------+-------------+--------+------------+--------------------+
+
+UC12-Draw the ER Diagram for Address Book Service DB
+mysql> CREATE DATABASE AddressBook;
+mysql> CREATE TABLE Addressbook_type
+    -> (type_id INT NOT NULL,
+    -> add_name VARCHAR(150) NOT NULL,
+    -> addr_type VARCHAR(150) NOT NULL);
+
+mysql> alter table Addressbook_type ADD PRIMARY KEY(type_id);
+mysql> CREATE TABLE Contacts
+    -> (contact_id INT NOT NULL,
+    -> firstname VARCHAR(150) NOT NULL,
+    -> lastname VARCHAR(150) NOT NULL,
+    -> phone INT(10),
+    -> email VARCHAR(10),
+    -> type_id INT NOT NULL,
+    -> FOREIGN KEY (type_id) REFERENCES Addressbook_type(type_id)
+    -> );
+
+mysql> select * from addressbook_type;
++---------+------------+------------------+
+| type_id | add_name   | addr_type        |
++---------+------------+------------------+
+|      11 | Apartments | Owned            |
+|      22 | Apartments | Rented           |
+|      33 | Family     | Çlose Relatives  |
+|      44 | Friends    | Building Friends |
+|      55 | Friends    | School Friends   |
++---------+------------+------------------+
+
+mysql> select * from Address;
++------------+-----------+-------------+-----+------------+
+| address_id | city      | state       | zip | contact_id |
++------------+-----------+-------------+-----+------------+
+|          1 | kandivali | maharashtra |  89 |        102 |
+|          2 | mumbai    | maharashtra |  12 |        103 |
+|          3 | surat     | gujrat      |  19 |        101 |
+|          4 | kochi     | kerala      |  19 |        104 |
++------------+-----------+-------------+-----+------------+
+
+mysql> select * from Contacts;
++------------+-----------+----------+-----------+----------+---------+
+| contact_id | firstname | lastname | phone     | email    | type_id |
++------------+-----------+----------+-----------+----------+---------+
+|        101 | sagarika  | shinde   | 987656789 | ab@gmail |      11 |
+|        102 | sheetal   | shinde   | 987656789 | cd@gmail |      33 |
+|        103 | saniya    | bhonde   | 987656789 | cd@gmail |      44 |
+|        104 | yukti     | mittal   | 987656789 | xy@gmail |      55 |
++------------+-----------+----------+-----------+----------+---------+
+
+UC13-Ensure all retrieve queries done especially in UC 6, UC 7, UC 8 and UC 10 are working
+mysql> SELECT Contacts.firstname,Contacts.lastname,Address.city FROM Contacts INNER JOIN Address ON Contacts.contact_id=Address.contact_id WHERE Address.city='mumbai';
++-----------+----------+--------+
+| firstname | lastname | city   |
++-----------+----------+--------+
+| saniya    | bhonde   | mumbai |
++-----------+----------+--------+
+
+mysql> SELECT addressbook_type.add_name,COUNT(Contacts.type_id) FROM addressbook_type INNER JOIN Contacts ON addressbook_type.type_id=Contacts.type_id GROUP BY addressbook_type.type_id;
++------------+-------------------------+
+| add_name   | COUNT(Contacts.type_id) |
++------------+-------------------------+
+| Apartments |                       1 |
+| Family     |                       1 |
+| Friends    |                       1 |
+| Friends    |                       1 |
++------------+-------------------------+
+
+mysql> SELECT Contacts.firstname,Address.city FROM Contacts INNER JOIN Address ON Contacts.contact_id=Address.contact_id Where Address.city = 'mumbai' ORDER BY Contacts.firstname ASC;
++-----------+--------+
+| firstname | city   |
++-----------+--------+
+| saniya    | mumbai |
+| sheetal   | mumbai |
++-----------+--------+
+
+
+
+
